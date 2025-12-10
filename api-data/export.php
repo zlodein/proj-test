@@ -150,6 +150,8 @@ function handleExportRequest($action) {
         .booklet-map__bottom-square,
         .booklet-contacts__top-square,
         .booklet-contacts__bottom-square {background-color: <?php echo $themeColor; ?> !important;}   
+        
+        /* ОСНОВНЫЕ СТИЛИ ДЛЯ ПРОСМОТРА */
         .preview-content {padding: 20px; max-width: 1200px; margin: 0 auto; font-family: 'Roboto', sans-serif;}
         .js-preview-page {margin-bottom: 40px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); border-radius: 10px; overflow: hidden;}
         .booklet-page {width: 100%; min-height: 700px;}
@@ -158,14 +160,53 @@ function handleExportRequest($action) {
         .booklet-main__bottom,
         .booklet-char__title {display: block !important; opacity: 1 !important;}
         
-        /* ПРЕДОТВРАЩЕНИЕ РАЗРЫВОВ СТРАНИЦ */
-        .booklet-page,
-        .js-preview-page,
-        .booklet-page__inner,
-        .booklet-content {
-            page-break-inside: avoid !important;
-            break-inside: avoid-page !important;
-            -webkit-column-break-inside: avoid !important;
+        /* КРИТИЧЕСКИ ВАЖНО ДЛЯ PDF: ФИКСИРОВАННАЯ ВЫСОТА И РАЗРЫВЫ СТРАНИЦ */
+        @media print, screen {
+            .booklet-page {
+                width: 297mm !important;
+                height: 210mm !important;
+                min-height: 210mm !important;
+                max-height: 210mm !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                overflow: hidden !important;
+                page-break-before: always !important;
+                page-break-after: always !important;
+                page-break-inside: avoid !important;
+                break-before: page !important;
+                break-after: page !important;
+                break-inside: avoid !important;
+                position: relative !important;
+                box-sizing: border-box !important;
+            }
+            
+            .booklet-page:first-child {
+                page-break-before: auto !important;
+                break-before: auto !important;
+            }
+            
+            .booklet-page:last-child {
+                page-break-after: auto !important;
+                break-after: auto !important;
+            }
+            
+            .js-preview-page {
+                width: 297mm !important;
+                height: 210mm !important;
+                min-height: 210mm !important;
+                max-height: 210mm !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                box-shadow: none !important;
+                border-radius: 0 !important;
+            }
+            
+            .booklet-page__inner,
+            .booklet-content {
+                width: 100% !important;
+                height: 100% !important;
+                overflow: hidden !important;
+            }
         }
         
         <?php if (!$canPrint): ?>
