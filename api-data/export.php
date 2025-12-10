@@ -1,6 +1,6 @@
 <?php
 define('PDFSHIFT_API_KEY', 'sk_e0c5392da71907de6f292079d650be00a0d55caf');
-define('PDFSHIFT_API_URL', 'https://api.pdfshift.io/v3/convert/document');
+define('PDFSHIFT_API_URL', 'https://api.pdfshift.io/v3/convert/pdf');
 
 function handleExportRequest($action) {
     switch ($action) {
@@ -914,7 +914,7 @@ function convertHtmlToPdfViaPDFShift($htmlContent, $title, $presentationId) {
         if ($httpCode !== 200) {
             error_log('PDFShift API Response: ' . $response . ' (HTTP ' . $httpCode . ')');
             $errorData = json_decode($response, true);
-            $errorMsg = $errorData['message'] ?? $response;
+            $errorMsg = $errorData['error'] ?? $errorData['message'] ?? $response;
             return ['error' => 'Ошибка сервиса конвертации: ' . $errorMsg];
         }
         
