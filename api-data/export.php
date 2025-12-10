@@ -2,6 +2,20 @@
 define('PDFSHIFT_API_KEY', 'sk_e0c5392da71907de6f292079d650be00a0d55caf');
 define('PDFSHIFT_API_URL', 'https://api.pdfshift.io/v3/convert/pdf');
 
+// Функция для конвертации относительных путей в абсолютные URL
+function convertToAbsoluteUrl($url) {
+    if (empty($url)) return '';
+    
+    // Если уже абсолютный URL
+    if (preg_match('/^https?:\/\//', $url)) {
+        return $url;
+    }
+    
+    // Конвертируем относительный в абсолютный
+    $baseUrl = 'https://presentation-realty.ru';
+    return $baseUrl . (strpos($url, '/') === 0 ? '' : '/') . $url;
+}
+
 function handleExportRequest($action) {
     switch ($action) {
         case 'generate_presentation':
@@ -60,7 +74,7 @@ function handleExportRequest($action) {
     <title><?php echo $title; ?></title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" type="text/css" href="/assets/css/main.css" />
+    <link rel="stylesheet" type="text/css" href="https://presentation-realty.ru/assets/css/main.css" />
 
     <style media="print">
         <?php if (!$canPrint): ?>
@@ -296,7 +310,7 @@ function handleExportRequest($action) {
                                 <div class="booklet-main__wrap">
                                     <div class="booklet-main__img">
                                         <?php if (!empty($slide['background_image'])): ?>
-                                            <img src="<?php echo htmlspecialchars($slide['background_image']); ?>" alt="" style="width: 100%; height: 100%; object-fit: cover;">
+                                            <img src="<?php echo htmlspecialchars(convertToAbsoluteUrl($slide['background_image'])); ?>" alt="" style="width: 100%; height: 100%; object-fit: cover;">
                                         <?php endif; ?>
                                     </div>
                                     <div class="booklet-main__content">
@@ -353,7 +367,7 @@ function handleExportRequest($action) {
                                 <div class="booklet-img__wrap">
                                     <div class="booklet-img__img">
                                         <?php if (!empty($slide['image'])): ?>
-                                            <img src="<?php echo htmlspecialchars($slide['image']); ?>" alt="" style="width: 100%; height: 100%; object-fit: cover;">
+                                            <img src="<?php echo htmlspecialchars(convertToAbsoluteUrl($slide['image'])); ?>" alt="" style="width: 100%; height: 100%; object-fit: cover;">
                                         <?php endif; ?>
                                     </div>
                                 </div>
@@ -376,7 +390,7 @@ function handleExportRequest($action) {
                                     ?>
                                         <div class="booklet-galery__img">
                                             <?php if ($imgUrl): ?>
-                                                <img src="<?php echo htmlspecialchars($imgUrl); ?>" alt="" style="width: 100%; height: 100%; object-fit: cover;">
+                                                <img src="<?php echo htmlspecialchars(convertToAbsoluteUrl($imgUrl)); ?>" alt="" style="width: 100%; height: 100%; object-fit: cover;">
                                             <?php endif; ?>
                                         </div>
                                     <?php endfor; ?>
@@ -397,7 +411,7 @@ function handleExportRequest($action) {
                                     <?php endif; ?>
                                     <div class="booklet-char__img">
                                         <?php if (!empty($slide['image'])): ?>
-                                            <img src="<?php echo htmlspecialchars($slide['image']); ?>" alt="" style="width: 100%; height: 100%; object-fit: cover;">
+                                            <img src="<?php echo htmlspecialchars(convertToAbsoluteUrl($slide['image'])); ?>" alt="" style="width: 100%; height: 100%; object-fit: cover;">
                                         <?php endif; ?>
                                     </div>
                                     <div class="booklet-char__content">
@@ -442,7 +456,7 @@ function handleExportRequest($action) {
                                     ?>
                                         <div class="booklet-grid__img">
                                             <?php if ($imgUrl): ?>
-                                                <img src="<?php echo htmlspecialchars($imgUrl); ?>" alt="" style="width: 100%; height: 100%; object-fit: cover;">
+                                                <img src="<?php echo htmlspecialchars(convertToAbsoluteUrl($imgUrl)); ?>" alt="" style="width: 100%; height: 100%; object-fit: cover;">
                                             <?php endif; ?>
                                         </div>
                                     <?php endfor; ?>
@@ -474,7 +488,7 @@ function handleExportRequest($action) {
                                     ?>
                                         <div class="booklet-info__block booklet-info__img">
                                             <?php if ($imgUrl): ?>
-                                                <img src="<?php echo htmlspecialchars($imgUrl); ?>" alt="" style="width: 100%; height: 100%; object-fit: cover;">
+                                                <img src="<?php echo htmlspecialchars(convertToAbsoluteUrl($imgUrl)); ?>" alt="" style="width: 100%; height: 100%; object-fit: cover;">
                                             <?php endif; ?>
                                         </div>
                                     <?php endfor; ?>
@@ -508,12 +522,12 @@ function handleExportRequest($action) {
                                             ?>
                                             <div class="booklet-stroen__block booklet-stroen__img">
                                                 <?php if ($img1Url): ?>
-                                                    <img src="<?php echo htmlspecialchars($img1Url); ?>" alt="" style="width: 100%; height: 100%; object-fit: cover;">
+                                                    <img src="<?php echo htmlspecialchars(convertToAbsoluteUrl($img1Url)); ?>" alt="" style="width: 100%; height: 100%; object-fit: cover;">
                                                 <?php endif; ?>
                                             </div>
                                             <div class="booklet-stroen__block booklet-stroen__img">
                                                 <?php if ($img2Url): ?>
-                                                    <img src="<?php echo htmlspecialchars($img2Url); ?>" alt="" style="width: 100%; height: 100%; object-fit: cover;">
+                                                    <img src="<?php echo htmlspecialchars(convertToAbsoluteUrl($img2Url)); ?>" alt="" style="width: 100%; height: 100%; object-fit: cover;">
                                                 <?php endif; ?>
                                             </div>
                                         </div>
@@ -556,7 +570,7 @@ function handleExportRequest($action) {
                                         ?>
                                             <div class="booklet-osobenn__img">
                                                 <?php if ($imgUrl): ?>
-                                                    <img src="<?php echo htmlspecialchars($imgUrl); ?>" alt="" style="width: 100%; height: 100%; object-fit: cover;">
+                                                    <img src="<?php echo htmlspecialchars(convertToAbsoluteUrl($imgUrl)); ?>" alt="" style="width: 100%; height: 100%; object-fit: cover;">
                                                 <?php endif; ?>
                                             </div>
                                         <?php endfor; ?>
@@ -610,7 +624,7 @@ function handleExportRequest($action) {
                                             ?>
                                                 <div class="booklet-contacts__block booklet-contacts__img">
                                                     <?php if ($imgUrl): ?>
-                                                        <img src="<?php echo htmlspecialchars($imgUrl); ?>" alt="" style="width: 100%; height: 100%; object-fit: cover;">
+                                                        <img src="<?php echo htmlspecialchars(convertToAbsoluteUrl($imgUrl)); ?>" alt="" style="width: 100%; height: 100%; object-fit: cover;">
                                                     <?php endif; ?>
                                                 </div>
                                             <?php endfor; ?>
@@ -623,7 +637,7 @@ function handleExportRequest($action) {
                                                 <div class="booklet-contacts__avatar">
                                                     <div class="booklet-contacts__avatar-wrap">
                                                         <?php if (!empty($slide['avatar'])): ?>
-                                                            <img src="<?php echo htmlspecialchars($slide['avatar']); ?>" alt="" style="width: 100%; height: 100%; object-fit: cover;">
+                                                            <img src="<?php echo htmlspecialchars(convertToAbsoluteUrl($slide['avatar'])); ?>" alt="" style="width: 100%; height: 100%; object-fit: cover;">
                                                         <?php endif; ?>
                                                     </div>
                                                 </div>
@@ -879,7 +893,11 @@ function convertHtmlToPdfViaPDFShift($htmlContent, $title, $presentationId) {
             'source' => $htmlContent,
             'landscape' => true,
             'format' => 'A4',
-            'margin' => 0
+            'margin' => 0,
+            'wait' => [
+                'for' => 'load',
+                'timeout' => 10000
+            ]
         ];
         
         $ch = curl_init();
