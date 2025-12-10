@@ -889,15 +889,12 @@ function handleExportRequest($action) {
 
 function convertHtmlToPdfViaPDFShift($htmlContent, $title, $presentationId) {
     try {
+        // Базовые параметры без wait - он не поддерживается API
         $params = [
             'source' => $htmlContent,
             'landscape' => true,
             'format' => 'A4',
-            'margin' => 0,
-            'wait' => [
-                'for' => 'load',
-                'timeout' => 10000
-            ]
+            'margin' => 0
         ];
         
         $ch = curl_init();
