@@ -1,4 +1,7 @@
 <?php
+define('PDFSHIFT_API_KEY', 'sk_e0c5392da71907de6f292079d650be00a0d55caf');
+define('PDFSHIFT_API_URL', 'https://api.pdfshift.io/v3/convert/document');
+
 function handleExportRequest($action) {
     switch ($action) {
         case 'generate_presentation':
@@ -77,12 +80,12 @@ function handleExportRequest($action) {
             color: #333;
         }
         <?php else: ?>
-        @page {size: A4 landscape;margin: 0;}
-        body {margin: 0 !important;padding: 0 !important;background: #fff !important;-webkit-print-color-adjust: exact !important;print-color-adjust: exact !important;color-adjust: exact !important;}
-        .booklet-page {width: 297mm !important;height: 210mm !important;margin: 0 !important;padding: 0 !important;box-shadow: none !important;border-radius: 0 !important;page-break-after: always !important;break-after: page !important;transform: none !important; overflow: hidden !important;}
+        @page {size: A4 landscape; margin: 0;}
+        body {margin: 0 !important; padding: 0 !important; background: #fff !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; color-adjust: exact !important;}
+        .booklet-page {width: 297mm !important; height: 210mm !important; margin: 0 !important; padding: 0 !important; box-shadow: none !important; border-radius: 0 !important; page-break-after: always !important; break-after: page !important; transform: none !important; overflow: hidden !important;}
         .booklet-page:last-child {page-break-after: auto !important;}
-        .preview-content {padding: 0 !important;margin: 0 !important;}
-        .js-preview-page {margin: 0 !important;box-shadow: none !important;}
+        .preview-content {padding: 0 !important; margin: 0 !important;}
+        .js-preview-page {margin: 0 !important; box-shadow: none !important;}
         .booklet-main__img,
         .booklet-char__top-square,
         .booklet-char__bottom-square,
@@ -101,7 +104,7 @@ function handleExportRequest($action) {
         .booklet-map__top-square,
         .booklet-map__bottom-square,
         .booklet-contacts__top-square,
-        .booklet-contacts__bottom-square {-webkit-print-color-adjust: exact !important;print-color-adjust: exact !important;}
+        .booklet-contacts__bottom-square {-webkit-print-color-adjust: exact !important; print-color-adjust: exact !important;}
         #pdf-controls,
         .no-print,
         button,
@@ -133,13 +136,13 @@ function handleExportRequest($action) {
         .booklet-map__bottom-square,
         .booklet-contacts__top-square,
         .booklet-contacts__bottom-square {background-color: <?php echo $themeColor; ?> !important;}   
-        .preview-content {padding: 20px;max-width: 1200px;margin: 0 auto;font-family: 'Roboto', sans-serif;}
-        .js-preview-page {margin-bottom: 40px;box-shadow: 0 5px 20px rgba(0,0,0,0.1);border-radius: 10px;overflow: hidden;}
-        .booklet-page {width: 100%;min-height: 700px;}
+        .preview-content {padding: 20px; max-width: 1200px; margin: 0 auto; font-family: 'Roboto', sans-serif;}
+        .js-preview-page {margin-bottom: 40px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); border-radius: 10px; overflow: hidden;}
+        .booklet-page {width: 100%; min-height: 700px;}
         .booklet-main__top,
         .booklet-main__center,
         .booklet-main__bottom,
-        .booklet-char__title {display: block !important;opacity: 1 !important;}
+        .booklet-char__title {display: block !important; opacity: 1 !important;}
         
         <?php if (!$canPrint): ?>
         /* Стили для отображения сообщения о блокировке печати */
@@ -235,7 +238,7 @@ function handleExportRequest($action) {
     <div class="print-disabled-overlay" id="printBlockOverlay">
         <div class="print-disabled-content">
             <i class="fas fa-ban"></i>
-            <h2>Печать заблокирована</h2>
+            <h2>Экспорт в PDF заблокирован</h2>
             <?php if ($isOwner): ?>
             <p>Ваш текущий тариф "Бесплатный" не позволяет экспортировать презентации в PDF.</p>
             <p>Обновите тариф, чтобы получить доступ к этой функции и многим другим возможностям.</p>
@@ -326,13 +329,6 @@ function handleExportRequest($action) {
                                                     $converted = $amount * ($rates[$currency] / $rate);
                                                     $convertedFormatted = number_format($converted, 0, '.', ' ');
                                                     $currSymbol = CurrencyConverter::getSymbol($currCode);
-                                                    $currNames = [
-                                                        'RUB' => 'руб.',
-                                                        'USD' => 'дол.',
-                                                        'EUR' => 'евро',
-                                                        'CNY' => 'юань',
-                                                        'KZT' => 'тенге'
-                                                    ];
                                                     ?>
                                                     <div class="currency-item">
                                                         <span class="currency-value"><?php echo $convertedFormatted; ?></span>
@@ -467,7 +463,7 @@ function handleExportRequest($action) {
                                             <?php echo !empty($slide['title']) ? htmlspecialchars($slide['title']) : 'ОПИСАНИЕ'; ?>
                                         </div>
                                         <div class="booklet-info__text">
-                                            <?php echo !empty($slide['content']) ? nl2br(htmlspecialchars($slide['content'])) : 'Подробно опишите о своем объекте - транспортная доступность, местоположение, подробная планировка, особенности.'; ?>
+                                            <?php echo !empty($slide['content']) ? nl2br(htmlspecialchars($slide['content'])) : 'Подробно опишите о своем объекте'; ?>
                                         </div>
                                     </div>
                                     <?php
@@ -499,7 +495,7 @@ function handleExportRequest($action) {
                                                 <?php echo !empty($slide['title']) ? htmlspecialchars($slide['title']) : 'ИНФРАСТРУКТУРА'; ?>
                                             </div>
                                             <div class="booklet-stroen__text">
-                                                <?php echo !empty($slide['content']) ? nl2br(htmlspecialchars($slide['content'])) : 'Подробно опишите, что находится вблизи вашего объекта - детский сад, школа, магазины, торговые центры...'; ?>
+                                                <?php echo !empty($slide['content']) ? nl2br(htmlspecialchars($slide['content'])) : 'Подробно опишите инфраструктуру'; ?>
                                             </div>
                                         </div>
                                         <div class="booklet-stroen__grid">
@@ -586,10 +582,10 @@ function handleExportRequest($action) {
                                         <div class="booklet-map__bottom-square"></div>
                                         <div class="booklet-map__info">
                                             <div class="booklet-map__name">
-                                                <?php echo !empty($slide['location_name']) ? htmlspecialchars($slide['location_name']) : 'ЖК "Успешная продажа"'; ?>
+                                                <?php echo !empty($slide['location_name']) ? htmlspecialchars($slide['location_name']) : 'Объект'; ?>
                                             </div>
                                             <div class="booklet-map__text">
-                                                <?php echo !empty($slide['location_address']) ? htmlspecialchars($slide['location_address']) : 'Краснодарский край, Городной округ Сочи'; ?>
+                                                <?php echo !empty($slide['location_address']) ? htmlspecialchars($slide['location_address']) : 'Адрес объекта'; ?>
                                             </div>
                                         </div>
                                     </div>
@@ -634,16 +630,16 @@ function handleExportRequest($action) {
                                             </div>
                                             <div class="booklet-contacts__info">
                                                 <div class="booklet-contacts__name">
-                                                    <?php echo !empty($slide['contact_name']) ? htmlspecialchars($slide['contact_name']) : 'Slide Estate'; ?>
+                                                    <?php echo !empty($slide['contact_name']) ? htmlspecialchars($slide['contact_name']) : 'Контакт'; ?>
                                                 </div>
                                                 <div class="booklet-contacts__text">
-                                                    <?php echo !empty($slide['contact_role']) ? htmlspecialchars($slide['contact_role']) : 'Онлайн-сервис для риелторов'; ?>
+                                                    <?php echo !empty($slide['contact_role']) ? htmlspecialchars($slide['contact_role']) : 'Должность'; ?>
                                                 </div>
                                                 <div class="booklet-contacts__text">
-                                                    <?php echo !empty($slide['contact_phone']) ? htmlspecialchars($slide['contact_phone']) : '+7 (900) 000-00-00'; ?>
+                                                    <?php echo !empty($slide['contact_phone']) ? htmlspecialchars($slide['contact_phone']) : 'Телефон'; ?>
                                                 </div>
                                                 <div class="booklet-contacts__text">
-                                                    <?php echo !empty($slide['contact_messengers']) ? htmlspecialchars($slide['contact_messengers']) : 'Telegram | WhatsApp'; ?>
+                                                    <?php echo !empty($slide['contact_messengers']) ? htmlspecialchars($slide['contact_messengers']) : 'Мессенджеры'; ?>
                                                 </div>
                                             </div>
                                         </div>
@@ -679,7 +675,7 @@ function handleExportRequest($action) {
         </div>
         <?php else: ?>
         <div id="pdf-controls" style="text-align: center; margin: 40px 0;">
-            <button onclick="printToPDF()" style="
+            <button onclick="exportToPDF()" style="
                 background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
                 color: white; 
                 border: none; 
@@ -726,19 +722,16 @@ function handleExportRequest($action) {
 
     <script>
     <?php if (!$canPrint): ?>
-    // ПОЛНАЯ БЛОКИРОВКА ПЕЧАТИ
-    function blockPrint() {
-        // Блокируем контекстное меню
+    // ПОЛНАЯ БЛОКИРОВКА ЭКСПОРТА
+    function blockExport() {
         document.addEventListener('contextmenu', function(e) {
             e.preventDefault();
         });
         
-        // Блокируем сочетания клавиш для печати
         document.addEventListener('keydown', function(e) {
-            // Ctrl+P, Cmd+P, F12 (DevTools)
             if ((e.ctrlKey || e.metaKey) && e.key === 'p') {
                 e.preventDefault();
-                showPrintBlock();
+                showExportBlock();
                 return false;
             }
             if (e.key === 'F12') {
@@ -747,34 +740,19 @@ function handleExportRequest($action) {
             }
         });
         
-        // Блокируем меню браузера
         window.addEventListener('beforeprint', function(e) {
             e.preventDefault();
-            showPrintBlock();
+            showExportBlock();
             return false;
         });
         
-        // Блокируем вызов печати из JavaScript
         window.print = function() {
-            showPrintBlock();
+            showExportBlock();
             return false;
         };
-        
-        // Блокируем кнопку печати на панели браузера
-        if (navigator.userAgent.indexOf('Chrome') > -1) {
-            document.addEventListener('DOMContentLoaded', function() {
-                var printBtn = document.querySelector('button[onclick*="print"]');
-                if (printBtn) {
-                    printBtn.onclick = function() {
-                        showPrintBlock();
-                        return false;
-                    };
-                }
-            });
-        }
     }
     
-    function showPrintBlock() {
+    function showExportBlock() {
         const overlay = document.getElementById('printBlockOverlay');
         if (overlay) {
             overlay.style.display = 'flex';
@@ -790,27 +768,54 @@ function handleExportRequest($action) {
         }
     }
     
-    // Инициализируем блокировку при загрузке страницы
     document.addEventListener('DOMContentLoaded', function() {
-        blockPrint();
+        blockExport();
     });
     <?php else: ?>
-    function printToPDF() {
-        const originalTitle = document.title;
-        document.title = "Презентация_<?php echo $id; ?>";
-        window.print();
-        setTimeout(() => {
-            document.title = originalTitle;
-        }, 1000);
-    }
-    <?php endif; ?>
-    
-    const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.has('print')) {
-        window.addEventListener('load', function() {
-            setTimeout(printToPDF, 1500);
+    function exportToPDF() {
+        const button = event.target.closest('button');
+        const originalText = button.innerHTML;
+        button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> <span>Подготовка...</span>';
+        button.disabled = true;
+
+        const htmlContent = document.documentElement.outerHTML;
+        
+        fetch('/api.php?action=export_pdf&id=<?php echo $id; ?>', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                html: htmlContent,
+                title: '<?php echo $title; ?>'
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success && data.download_url) {
+                const link = document.createElement('a');
+                link.href = data.download_url;
+                link.download = '<?php echo $title; ?>.pdf';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                
+                button.innerHTML = originalText;
+                button.disabled = false;
+            } else {
+                alert('Ошибка при экспорте в PDF: ' + (data.error || 'неизвестная ошибка'));
+                button.innerHTML = originalText;
+                button.disabled = false;
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Ошибка при подключении к серверу');
+            button.innerHTML = originalText;
+            button.disabled = false;
         });
     }
+    <?php endif; ?>
     </script>
 </body>
 </html>
@@ -835,7 +840,6 @@ function handleExportRequest($action) {
                 jsonResponse(['error' => 'Доступ запрещён'], 403);
             }
             
-            // Проверяем, может ли пользователь печатать по тарифу
             $userId = getCurrentUserId();
             if (!canUserPrint($userId)) {
                 jsonResponse(['error' => 'Ваш тариф не позволяет экспортировать в PDF. Обновите тариф.'], 403);
@@ -847,17 +851,105 @@ function handleExportRequest($action) {
                 jsonResponse(['error' => 'Презентация не найдена'], 404);
             }
             
-            $printUrl = APP_URL . "/api.php?action=generate_presentation&id={$id}";
+            $input = json_decode(file_get_contents('php://input'), true);
+            $htmlContent = $input['html'] ?? '';
+            $presentationTitle = $input['title'] ?? 'Презентация';
             
-            jsonResponse([
-                'success' => true,
-                'print_url' => $printUrl,
-                'instructions' => 'Откройте print_url в Chrome/Edge и нажмите Ctrl+P для сохранения в PDF'
-            ]);
+            if (empty($htmlContent)) {
+                jsonResponse(['error' => 'HTML контент не найден'], 400);
+            }
+            
+            $response = convertHtmlToPdfViaPDFShift($htmlContent, $presentationTitle, $id);
+            
+            if (isset($response['error'])) {
+                jsonResponse(['error' => $response['error']], 500);
+            }
+            
+            jsonResponse($response, 200);
             break;
             
         default:
             jsonResponse(['error' => 'Неизвестное действие экспорта: ' . $action], 400);
     }
+}
+
+function convertHtmlToPdfViaPDFShift($htmlContent, $title, $presentationId) {
+    try {
+        $params = [
+            'source' => $htmlContent,
+            'filename' => sanitizeFilename($title) . '_' . $presentationId . '.pdf',
+            'landscape' => true,
+            'format' => 'A4',
+            'margin' => 0,
+            'delay' => 3000,
+        ];
+        
+        $ch = curl_init();
+        curl_setopt_array($ch, [
+            CURLOPT_URL => PDFSHIFT_API_URL,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => '',
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 120,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => 'POST',
+            CURLOPT_POSTFIELDS => json_encode($params),
+            CURLOPT_HTTPHEADER => [
+                'Authorization: Bearer ' . PDFSHIFT_API_KEY,
+                'Content-Type: application/json',
+            ],
+        ]);
+        
+        $response = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $error = curl_error($ch);
+        curl_close($ch);
+        
+        if ($error) {
+            error_log('PDFShift API Error: ' . $error);
+            return ['error' => 'Ошибка подключения к сервису конвертации: ' . $error];
+        }
+        
+        if ($httpCode !== 200) {
+            error_log('PDFShift API Response: ' . $response . ' (HTTP ' . $httpCode . ')');
+            $errorData = json_decode($response, true);
+            $errorMsg = $errorData['message'] ?? $response;
+            return ['error' => 'Ошибка сервиса конвертации: ' . $errorMsg];
+        }
+        
+        if ($httpCode === 200 && strlen($response) > 100) {
+            $uploadsDir = __DIR__ . '/../assets/uploads/pdfs/';
+            if (!is_dir($uploadsDir)) {
+                mkdir($uploadsDir, 0755, true);
+            }
+            
+            $filename = sanitizeFilename($title) . '_' . $presentationId . '_' . time() . '.pdf';
+            $filepath = $uploadsDir . $filename;
+            
+            if (file_put_contents($filepath, $response) !== false) {
+                return [
+                    'success' => true,
+                    'download_url' => '/assets/uploads/pdfs/' . $filename,
+                    'filename' => $filename
+                ];
+            } else {
+                return ['error' => 'Не удалось сохранить PDF файл на сервер'];
+            }
+        }
+        
+        return ['error' => 'Неожиданный ответ от сервиса конвертации'];
+        
+    } catch (Exception $e) {
+        error_log('PDFShift Exception: ' . $e->getMessage());
+        return ['error' => 'Ошибка при обработке запроса: ' . $e->getMessage()];
+    }
+}
+
+function sanitizeFilename($filename) {
+    $filename = preg_replace('/[^a-zA-Z0-9_-]/u', '_', $filename);
+    $filename = substr($filename, 0, 50);
+    $filename = preg_replace('/_+/', '_', $filename);
+    return trim($filename, '_');
 }
 ?>
