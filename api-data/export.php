@@ -877,11 +877,15 @@ function convertHtmlToPdfViaPDFShift($htmlContent, $title, $presentationId) {
     try {
         $params = [
             'source' => $htmlContent,
-            'filename' => sanitizeFilename($title) . '_' . $presentationId . '.pdf',
             'landscape' => true,
             'format' => 'A4',
-            'margin' => 0,
-            'delay' => 3000,
+            'margin' => [
+                'top' => 0,
+                'bottom' => 0,
+                'left' => 0,
+                'right' => 0
+            ],
+            'wait_time' => 3000,
         ];
         
         $ch = curl_init();
@@ -896,9 +900,9 @@ function convertHtmlToPdfViaPDFShift($htmlContent, $title, $presentationId) {
             CURLOPT_CUSTOMREQUEST => 'POST',
             CURLOPT_POSTFIELDS => json_encode($params),
             CURLOPT_HTTPHEADER => [
-                'Authorization: Bearer ' . PDFSHIFT_API_KEY,
                 'Content-Type: application/json',
             ],
+            CURLOPT_USERPWD => 'api:' . PDFSHIFT_API_KEY,
         ]);
         
         $response = curl_exec($ch);
