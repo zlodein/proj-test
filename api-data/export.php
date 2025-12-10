@@ -158,6 +158,16 @@ function handleExportRequest($action) {
         .booklet-main__bottom,
         .booklet-char__title {display: block !important; opacity: 1 !important;}
         
+        /* ПРЕДОТВРАЩЕНИЕ РАЗРЫВОВ СТРАНИЦ */
+        .booklet-page,
+        .js-preview-page,
+        .booklet-page__inner,
+        .booklet-content {
+            page-break-inside: avoid !important;
+            break-inside: avoid-page !important;
+            -webkit-column-break-inside: avoid !important;
+        }
+        
         <?php if (!$canPrint): ?>
         /* Стили для отображения сообщения о блокировке печати */
         .print-disabled-overlay {
