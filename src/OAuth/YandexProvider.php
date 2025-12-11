@@ -51,9 +51,18 @@ class YandexProvider extends BaseOAuthProvider {
             ['Authorization: OAuth ' . $accessToken]
         );
         
+        // Получаем аватар
+        $avatar = null;
+        if (isset($response['default_avatar_id']) && !empty($response['default_avatar_id'])) {
+            $avatar = 'https://avatars.yandex.net/get-yapic/' . $response['default_avatar_id'] . '/islands-200';
+        }
+        
         return [
             'email' => $response['default_email'] ?? null,
-            'name' => $response['real_name'] ?? $response['display_name'] ?? $response['login'] ?? 'User'
+            'first_name' => $response['first_name'] ?? '',
+            'last_name' => $response['last_name'] ?? '',
+            'name' => $response['real_name'] ?? $response['display_name'] ?? $response['login'] ?? 'User',
+            'avatar' => $avatar
         ];
     }
 }

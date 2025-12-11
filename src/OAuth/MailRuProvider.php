@@ -51,9 +51,12 @@ class MailRuProvider extends BaseOAuthProvider {
         
         return [
             'email' => $response['email'] ?? null,
+            'first_name' => $response['first_name'] ?? '',
+            'last_name' => $response['last_name'] ?? '',
             'name' => $response['name'] ?? 
                      trim(($response['first_name'] ?? '') . ' ' . ($response['last_name'] ?? '')) ?:
-                     'User'
+                     'User',
+            'avatar' => $response['image'] ?? null
         ];
     }
 }
