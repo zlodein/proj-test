@@ -76,22 +76,31 @@ abstract class BaseOAuthProvider {
         }
         
         // Проверяем существует ли пользователь
-        $stmt = $this->db->prepare("SELECT id, email FROM users WHERE email = ?");
+        $stmt = $this->db->prepare("SELECT id, email, is_active FROM users WHERE email = ?");
         $stmt->execute([$email]);
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
         
         if ($user) {
             // Пользователь существует
+            // Проверяем активность
+            if (!$user['is_active']) {
+                throw new Exception('Аккаунт заблокирован');
+            }
             return $user['id'];
         } else {
             // Создаем нового пользователя
+            // Генерируем случайный пароль (пользователь не сможет им воспользоваться)
             $randomPassword = password_hash(bin2hex(random_bytes(16)), PASSWORD_DEFAULT);
             
+            // Получаем ID роли по умолчанию (user)
+            $roleId = 1; // ID роли по умолчанию
+            $tariffId = 1; // ID тарифа по умолчанию
+            
             $stmt = $this->db->prepare("
-                INSERT INTO users (email, first_name, password, email_verified, created_at, updated_at) 
-                VALUES (?, ?, ?, 1, NOW(), NOW())
+                INSERT INTO users (email, password, name, role_id, tariff_id, is_active, created_at) 
+                VALUES (?, ?, ?, ?, ?, 1, NOW())
             ");
-            $stmt->execute([$email, $name, $randomPassword]);
+            $stmt->execute([$email, $randomPassword, $name, $roleId, $tariffId]);
             
             return $this->db->lastInsertId();
         }
