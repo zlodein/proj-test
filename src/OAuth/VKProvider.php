@@ -1,11 +1,11 @@
 <?php
 
-require_once __DIR__ . '/OAuthProvider.php';
+require_once __DIR__ . '/BaseOAuthProvider.php';
 
 /**
  * ВКонтакте OAuth провайдер
  */
-class VKProvider extends OAuthProvider {
+class VKProvider extends BaseOAuthProvider {
     
     public function getAuthUrl() {
         $params = [

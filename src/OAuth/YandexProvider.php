@@ -1,11 +1,11 @@
 <?php
 
-require_once __DIR__ . '/OAuthProvider.php';
+require_once __DIR__ . '/BaseOAuthProvider.php';
 
 /**
  * Яндекс OAuth провайдер
  */
-class YandexProvider extends OAuthProvider {
+class YandexProvider extends BaseOAuthProvider {
     
     public function getAuthUrl() {
         $params = [
