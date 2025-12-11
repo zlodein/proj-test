@@ -1,11 +1,11 @@
 <?php
 
-require_once __DIR__ . '/OAuthProvider.php';
+require_once __DIR__ . '/BaseOAuthProvider.php';
 
 /**
  * Mail.ru OAuth провайдер
  */
-class MailRuProvider extends OAuthProvider {
+class MailRuProvider extends BaseOAuthProvider {
     
     public function getAuthUrl() {
         $params = [
@@ -51,9 +51,12 @@ class MailRuProvider extends OAuthProvider {
         
         return [
             'email' => $response['email'] ?? null,
+            'first_name' => $response['first_name'] ?? '',
+            'last_name' => $response['last_name'] ?? '',
             'name' => $response['name'] ?? 
                      trim(($response['first_name'] ?? '') . ' ' . ($response['last_name'] ?? '')) ?:
-                     'User'
+                     'User',
+            'avatar' => $response['image'] ?? null
         ];
     }
 }

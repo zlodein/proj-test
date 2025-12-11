@@ -1,11 +1,11 @@
 <?php
 
-require_once __DIR__ . '/OAuthProvider.php';
+require_once __DIR__ . '/BaseOAuthProvider.php';
 
 /**
  * ВКонтакте OAuth провайдер
  */
-class VKProvider extends OAuthProvider {
+class VKProvider extends BaseOAuthProvider {
     
     public function getAuthUrl() {
         $params = [
@@ -46,7 +46,7 @@ class VKProvider extends OAuthProvider {
     public function getUserInfo($accessToken) {
         $params = [
             'user_ids' => $accessToken['user_id'],
-            'fields' => 'first_name,last_name',
+            'fields' => 'first_name,last_name,photo_200',
             'access_token' => $accessToken['access_token'],
             'v' => $this->config['api_version']
         ];
@@ -63,7 +63,10 @@ class VKProvider extends OAuthProvider {
         
         return [
             'email' => $accessToken['email'],
-            'name' => trim(($user['first_name'] ?? '') . ' ' . ($user['last_name'] ?? ''))
+            'first_name' => $user['first_name'] ?? '',
+            'last_name' => $user['last_name'] ?? '',
+            'name' => trim(($user['first_name'] ?? '') . ' ' . ($user['last_name'] ?? '')),
+            'avatar' => $user['photo_200'] ?? null
         ];
     }
 }
