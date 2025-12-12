@@ -1,0 +1,9 @@
+[02-Dec-2025 09:58:25 Europe/Moscow] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'cq88845_present.login_attempts' doesn't exist in /home/c/cq88845/presentation-realty/public_html/includes/auth.php:67
+Stack trace:
+#0 /home/c/cq88845/presentation-realty/public_html/includes/auth.php(67): PDO->exec('DELETE FROM log...')
+#1 /home/c/cq88845/presentation-realty/public_html/src/Controllers/AuthController.php(56): checkLoginAttempts('zlodein70@gmail...')
+#2 /home/c/cq88845/presentation-realty/public_html/auth/login.php(52): AuthController->login()
+#3 {main}
+  thrown in /home/c/cq88845/presentation-realty/public_html/includes/auth.php on line 67
+[02-Dec-2025 10:00:24 Europe/Moscow] PHP Fatal error:  Cannot redeclare getCurrentUserId() (previously declared in /home/c/cq88845/presentation-realty/public_html/includes/functions.php:119) in /home/c/cq88845/presentation-realty/public_html/includes/auth.php on line 27
+[02-Dec-2025 10:00:46 Europe/Moscow] PHP Fatal error:  Cannot redeclare getCurrentUserId() (previously declared in /home/c/cq88845/presentation-realty/public_html/includes/functions.php:119) in /home/c/cq88845/presentation-realty/public_html/includes/auth.php on line 27

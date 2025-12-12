@@ -1,0 +1,9 @@
+<FilesMatch "\.(php|php[0-9]|phtml|pl|py|jsp|asp|sh|cgi)">
+Order Allow,Deny
+Deny from all
+</FilesMatch>
+
+<DirectoryMatch "^.*/presentations/.*">
+    AllowOverride None
+    Require all granted
+</DirectoryMatch>
