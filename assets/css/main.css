@@ -242,10 +242,30 @@ textarea.form-control {resize: vertical; min-height: 100px; font-family: inherit
 .swiper-pagination {position: relative; bottom: -20px;}
 .swiper-pagination-bullet {width: 12px; height: 12px; background: var(--border-color); opacity: 1;}
 .swiper-pagination-bullet-active {background: var(--primary-color); width: 30px; border-radius: 6px;}
-.preview-content {width: 100%; min-height: 100vh; max-width: 1200px; margin: 0 auto; font-family: 'Roboto', sans-serif;}
+.preview-content {width: 100%; min-height: 100vh; max-width: 100%; margin: 0 auto; font-family: 'Roboto', sans-serif;}
 .preview-content .booklet-page {margin: 20px auto; box-shadow: 0 5px 20px rgba(0,0,0,0.15); page-break-after: always; transform: scale(1);}
 .js-preview-page {margin-bottom: 40px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); border-radius: 10px; overflow: hidden;}
-.booklet-page {font-family: "Roboto", sans-serif; width: 1200px; height: 795px; font-weight: 300; font-size: 14px; line-height: 1.3; color: #000; background-color: #eeeeee; transform: scale(1); transform-origin: center; margin-bottom: 40px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); overflow: hidden;}
+.booklet-page {
+    font-family: "Roboto", sans-serif;
+    /* A4 размеры: 210mm x 297mm (при стандартном DPI 96) ≈ 794px x 1123px */
+    /* Но для печати используем оптимальный размер, соответствующий листу */
+    width: 100%;
+    max-width: 794px;
+    height: auto;
+    aspect-ratio: 794 / 1123;
+    font-weight: 300;
+    font-size: 14px;
+    line-height: 1.3;
+    color: #000;
+    background-color: #eeeeee;
+    transform: scale(1);
+    transform-origin: center;
+    margin: 20px auto;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    overflow: hidden;
+    page-break-after: always;
+    page-break-inside: avoid;
+}
 .booklet-page__inner {width: 100%; height: 100%;}
 .booklet-content {width: 100%; height: 100%; position: relative; z-index: 1; overflow: hidden;}
 .editor-btn[data-tooltip] {position: relative;}
@@ -487,8 +507,48 @@ textarea.form-control {resize: vertical; min-height: 100px; font-family: inherit
 
 /* ==================== PRINT СТИЛИ ==================== */
 @media print {
-    body {background: white;}
-    .booklet-page {margin: 0; box-shadow: none; page-break-after: always;}
+    * {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+        color-adjust: exact !important;
+    }
+    
+    body {
+        background: white;
+        margin: 0;
+        padding: 0;
+    }
+    
+    .booklet-page {
+        margin: 0 !important;
+        padding: 0 !important;
+        box-shadow: none !important;
+        page-break-after: always !important;
+        page-break-inside: avoid !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        height: auto !important;
+        transform: none !important;
+        display: block !important;
+    }
+    
+    .preview-content {
+        max-width: 100% !important;
+    }
+    
+    @page {
+        size: A4;
+        margin: 0;
+        padding: 0;
+    }
+    
+    .public-header,
+    #pdf-controls,
+    .footer-info,
+    .print-disabled {
+        display: none !important;
+    }
+    
     .booklet-map__img {height: 350px !important;min-height: 350px !important;page-break-inside: avoid;}
     .booklet-map__img img {width: 100% !important;height: 100% !important;object-fit: cover !important;-webkit-print-color-adjust: exact !important;print-color-adjust: exact !important;}  
     .booklet-map__metro {page-break-inside: avoid;-webkit-print-color-adjust: exact !important;print-color-adjust: exact !important;}
