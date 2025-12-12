@@ -1,6 +1,6 @@
 /**
  * Интеграция с Яндекс.Картами
- * Поддерживает режимы: editor (редактор), view (просмотр), static (статичное изображение)
+ * Поддерживает режимы: editor (редактор), view (просмотр), static (статическое изображение)
  */
 
 class YandexMapsIntegration {
@@ -9,10 +9,10 @@ class YandexMapsIntegration {
         this.mode = mode; // 'editor', 'view', 'static'
         this.map = null;
         this.placemark = null;
-        this.suggestView = null;
         this.currentCoords = null;
         this.currentAddress = '';
         this.isInitialized = false;
+        this.suggestTimeout = null;
     }
 
     /**
@@ -29,7 +29,7 @@ class YandexMapsIntegration {
             }
 
             const script = document.createElement('script');
-            script.src = `https://api-maps.yandex.ru/2.1/?apikey=${this.apiKey}&lang=ru_RU`;
+            script.src = `https://api-maps.yandex.ru/2.1/?apikey=${this.apiKey}&lang=ru_RU&suggest_apikey=${this.apiKey}`;
             script.onload = () => {
                 ymaps.ready(() => {
                     this.isInitialized = true;
@@ -65,8 +65,8 @@ class YandexMapsIntegration {
         // Создание кастомного пина
         this.createPlacemark(coords);
 
-        // Инициализация подсказок адресов
-        this.initSuggest(inputId);
+        // Инициализация подсказок адресов (новый метод без SuggestView)
+        this.initModernSuggest(input);
 
         // Обработчик клика по карте
         this.map.events.add('click', (e) => {
@@ -120,19 +120,18 @@ class YandexMapsIntegration {
         }
 
         this.placemark = new ymaps.Placemark(coords, {
-            hintContent: hintContent || 'Местоположение'
+            hintContent: hintContent || 'Местоположение',
+            balloonContent: hintContent
         }, {
-            iconLayout: 'default#image',
-            iconImageHref: '/assets/images/map-pin.svg', // Путь к вашему кастомному пину
-            iconImageSize: [40, 50],
-            iconImageOffset: [-20, -50],
+            preset: 'islands#redDotIcon',
             draggable: this.mode === 'editor'
         });
 
         if (this.mode === 'editor' && this.placemark.options.get('draggable')) {
             this.placemark.events.add('dragend', () => {
                 const coords = this.placemark.geometry.getCoordinates();
-                const input = document.querySelector('[data-map-address]');
+                const input = document.querySelector('[data-map-address]') || 
+                             document.querySelector('.location-address-input');
                 if (input) {
                     this.updateLocation(coords, input);
                 }
@@ -144,34 +143,135 @@ class YandexMapsIntegration {
     }
 
     /**
-     * Инициализация подсказок адресов
+     * Современная инициализация подсказок адресов (без устаревшего SuggestView)
      */
-    initSuggest(inputId) {
-        const input = document.getElementById(inputId);
+    initModernSuggest(input) {
         if (!input) return;
 
-        this.suggestView = new ymaps.SuggestView(inputId, {
-            results: 5,
-            offset: [0, 5]
-        });
+        // Создаем контейнер для подсказок
+        let suggestContainer = document.getElementById('yandex-suggest-container');
+        if (!suggestContainer) {
+            suggestContainer = document.createElement('div');
+            suggestContainer.id = 'yandex-suggest-container';
+            suggestContainer.className = 'yandex-suggest-container';
+            suggestContainer.style.cssText = `
+                position: absolute;
+                z-index: 10000;
+                background: white;
+                border: 1px solid #ddd;
+                border-radius: 4px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                max-height: 300px;
+                overflow-y: auto;
+                display: none;
+                min-width: 300px;
+            `;
+            document.body.appendChild(suggestContainer);
+        }
 
-        // Обработчик выбора адреса из подсказок
-        this.suggestView.events.add('select', (e) => {
-            const selectedAddress = e.get('item').value;
-            input.value = selectedAddress;
-            this.geocodeAddress(selectedAddress);
-        });
-
-        // Обработчик ручного ввода с задержкой
-        let timeout;
+        // Обработчик ввода с задержкой
         input.addEventListener('input', () => {
-            clearTimeout(timeout);
-            timeout = setTimeout(() => {
-                if (input.value.length > 3) {
-                    this.geocodeAddress(input.value);
+            clearTimeout(this.suggestTimeout);
+            const query = input.value.trim();
+            
+            if (query.length < 3) {
+                suggestContainer.style.display = 'none';
+                return;
+            }
+
+            this.suggestTimeout = setTimeout(async () => {
+                try {
+                    const suggestions = await this.getSuggestions(query);
+                    this.renderSuggestions(suggestions, input, suggestContainer);
+                } catch (error) {
+                    console.error('Ошибка получения подсказок:', error);
                 }
-            }, 1000);
+            }, 500);
         });
+
+        // Закрытие подсказок при клике вне
+        document.addEventListener('click', (e) => {
+            if (e.target !== input && !suggestContainer.contains(e.target)) {
+                suggestContainer.style.display = 'none';
+            }
+        });
+
+        // Позиционирование подсказок
+        input.addEventListener('focus', () => {
+            const rect = input.getBoundingClientRect();
+            suggestContainer.style.left = rect.left + 'px';
+            suggestContainer.style.top = (rect.bottom + 5) + 'px';
+            suggestContainer.style.width = rect.width + 'px';
+        });
+    }
+
+    /**
+     * Получение подсказок адресов через API геокодирования
+     */
+    async getSuggestions(query) {
+        try {
+            const result = await ymaps.geocode(query, {
+                results: 5,
+                json: true
+            });
+            
+            const suggestions = [];
+            const geoObjects = result.geoObjects;
+            
+            for (let i = 0; i < geoObjects.getLength(); i++) {
+                const obj = geoObjects.get(i);
+                suggestions.push({
+                    displayName: obj.getAddressLine(),
+                    coords: obj.geometry.getCoordinates()
+                });
+            }
+            
+            return suggestions;
+        } catch (error) {
+            console.error('Ошибка геокодирования:', error);
+            return [];
+        }
+    }
+
+    /**
+     * Отрисовка подсказок
+     */
+    renderSuggestions(suggestions, input, container) {
+        if (suggestions.length === 0) {
+            container.style.display = 'none';
+            return;
+        }
+
+        container.innerHTML = '';
+        suggestions.forEach(item => {
+            const div = document.createElement('div');
+            div.className = 'suggest-item';
+            div.textContent = item.displayName;
+            div.style.cssText = `
+                padding: 10px 15px;
+                cursor: pointer;
+                border-bottom: 1px solid #f0f0f0;
+                transition: background 0.2s;
+            `;
+            
+            div.addEventListener('mouseenter', () => {
+                div.style.background = '#f5f5f5';
+            });
+            
+            div.addEventListener('mouseleave', () => {
+                div.style.background = 'white';
+            });
+            
+            div.addEventListener('click', () => {
+                input.value = item.displayName;
+                container.style.display = 'none';
+                this.updateLocationByCoords(item.coords, item.displayName);
+            });
+            
+            container.appendChild(div);
+        });
+
+        container.style.display = 'block';
     }
 
     /**
@@ -240,6 +340,21 @@ class YandexMapsIntegration {
     }
 
     /**
+     * Обновление по координатам (из подсказок)
+     */
+    updateLocationByCoords(coords, address) {
+        this.currentCoords = coords;
+        this.currentAddress = address;
+        
+        if (this.map) {
+            this.map.setCenter(coords, 15);
+            this.createPlacemark(coords, address);
+        }
+        
+        this.dispatchLocationUpdate(coords, address);
+    }
+
+    /**
      * Отправка события об обновлении местоположения
      */
     dispatchLocationUpdate(coords, address) {
@@ -252,10 +367,11 @@ class YandexMapsIntegration {
             }
         });
         document.dispatchEvent(event);
+        console.log('Location updated:', { coords, address });
     }
 
     /**
-     * Получение статичного изображения карты (для просмотра и PDF)
+     * Получение статического изображения карты (для просмотра и PDF)
      */
     static getStaticMapUrl(coords, apiKey, size = '600,400', zoom = 15) {
         const [lat, lng] = coords;
@@ -265,7 +381,7 @@ class YandexMapsIntegration {
     }
 
     /**
-     * Рендеринг статичного изображения карты
+     * Рендеринг статического изображения карты
      */
     static renderStaticMap(containerId, coords, apiKey, size = '600,400') {
         const container = document.getElementById(containerId);
@@ -305,12 +421,15 @@ class YandexMapsIntegration {
             this.map.destroy();
             this.map = null;
         }
-        if (this.suggestView) {
-            this.suggestView = null;
-        }
         this.placemark = null;
         this.currentCoords = null;
         this.currentAddress = '';
+        
+        // Удаляем контейнер подсказок
+        const suggestContainer = document.getElementById('yandex-suggest-container');
+        if (suggestContainer) {
+            suggestContainer.remove();
+        }
     }
 }
 
