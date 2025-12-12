@@ -1,7 +1,0 @@
-# admin/.htaccess
-Order Deny,Allow
-Deny from all
-
-<Files "*.php">
-    Allow from all
-</Files>
